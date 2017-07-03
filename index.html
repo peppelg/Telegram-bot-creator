@@ -1,0 +1,105 @@
+<head>
+  <title>Crea bot</title>
+  <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0">
+  <script type="text/javascript" src="https://code.jquery.com/jquery-2.1.1.min.js"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.99.0/css/materialize.min.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.99.0/js/materialize.min.js"></script>
+</head>
+<body>
+  <nav>
+    <div class="nav-wrapper">
+      <a href="#" class="brand-logo center">Crea bot</a>
+      <ul id="nav-mobile" class="left hide-on-med-and-down">
+      </ul>
+    </div>
+  </nav>
+  <div class="input-field col s6">
+    <input id="token" type="text" class="validate">
+    <label for="token">Token del bot</label>
+  </div>
+  <div class="input-field col s12">
+    <textarea id="comandi" class="materialize-textarea"></textarea>
+    <label for="comandi">Comandi</label>
+  </div>
+  <script>$('#comandi').val("/start > Ciao! Usa /help per vedere cosa posso fare!\n/help > Mi puoi personalizzare :p");
+  $('#comandi').trigger('autoresize');</script>
+  <a class="waves-effect waves-light btn" id="bottoneCOMANDI" onclick='bottone("bottoneCOMANDI, 0"); comandi.length = 0;
+  comandi = cmd2array($("#comandi").val()); bottone("bottoneCOMANDI", 1);'>Aggiorna Comandi</a>
+  <br><br>
+  <a class="waves-effect waves-light btn" id="bottoneSTART" onclick='token = $("input#token").val(); start(token);'>Avvia</a>
+  <a class="btn disabled" id="bottoneSTOP" onclick='clearInterval(interval_id); bottone("bottoneSTART", 1);
+  bottone("bottoneSTOP", 0);'>Spegni</a>
+  <script>
+  function cmd2array(lista_comandi) {
+    comandi = {};
+    array_comandi = lista_comandi.split("\n");
+    array_comandi.forEach(function(item) {
+      array_comando = item.split(" > ");
+      messaggio = array_comando[0];
+      risposta = array_comando[1];
+      comandi[messaggio] = risposta;
+    });
+    return comandi;
+  }
+  var comandi = {};
+  comandi = cmd2array($("#comandi").val());
+  function bottone(id, azione) {
+    if(azione == false) {
+      $('#' + id).removeClass("waves-effect waves-light btn");
+      $('#' + id).addClass("btn disabled");
+    }
+    if(azione == true) {
+      $('#' + id).removeClass("btn disabled");
+      $('#' + id).addClass("waves-effect waves-light btn");
+    }
+  }
+  function sm(chatID, msg) {
+    $.ajax({
+      type: "POST",
+      url: "https://api.telegram.org/bot" + token + "/sendMessage",
+      data: "chat_id=" + chatID + "&text=" + msg,
+      dataType: "html",
+      success: function(response){
+        return response;
+      }
+    });
+  }
+  function bot(update) {
+    msg = update["message"]["text"];
+    chatID = update["message"]["chat"]["id"];
+    if(comandi[msg]) {
+      sm(chatID, comandi[msg]);
+    }
+  }
+  var interval_id = 0;
+  function start(token) {
+    bottone("bottoneSTART", 0);
+    bottone("bottoneSTOP", 1);
+    offset = 0;
+    interval_id = setInterval(function(){ $.ajax({
+      type: "POST",
+      url: "https://api.telegram.org/bot" + token + "/getUpdates",
+      data: "offset=" + offset,
+      dataType: "html",
+      success: function(response){
+        array = JSON.parse(response);
+        if(array["ok"] == false) {
+          bottone("bottoneSTART", 1);
+          bottone("bottoneSTOP", 0);
+          alert("Errore durante l'avvio del bot!");
+          clearInterval(interval_id);
+        }
+        if(array["result"][0]["update_id"]) {
+          bot(array["result"]["0"]);
+          offset = array["result"][0]["update_id"] + 1;
+        }}, error: function(response) {
+          bottone("bottoneSTART", 1);
+          bottone("bottoneSTOP", 0);
+          alert("Errore durante l'avvio del bot!");
+          clearInterval(interval_id);
+        }});
+        delete response;
+        delete array; }, 500);
+      }
+      </script>
+    </body>
