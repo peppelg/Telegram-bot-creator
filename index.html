@@ -11,6 +11,21 @@
 </head>
 
 <body>
+  <div id="redirect-modal" class="modal">
+    <div class="modal-content">
+      <h4>Nuova versione disponibile!</h4>
+      <p>È stata creata una versione migliore (non da me) del telegram bot creatore... Vuoi provarla?</p>
+    </div>
+    <div class="modal-footer">
+        <a href="#" class="modal-close waves-effect waves-red btn-flat">Rimani su questa</a>
+        <a href="https://github.pato05mc.tk/tg-js-bot" class="modal-close waves-effect waves-green btn-flat">Nuova versione</a>
+    </div>
+  </div>
+  <script>
+    $(window).load(function() {
+        $("#redirect-modal").modal("open");
+    });
+  </script>
   <nav>
     <div class="nav-wrapper">
       <a href="#" class="brand-logo center">Crea bot</a>
@@ -160,7 +175,7 @@
     </div>
     <div class="footer-copyright">
       <div class="container">
-        Copyright 2017 Giuseppe La Gaipa
+        Copyright 2017, 2018, 2019, 2020, 2021, 2022, 2023, 2024, 2025 peppelg
         <br> Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License. You may obtain a copy of the License at
         <br> http://www.apache.org/licenses/LICENSE-2.0
         <br> Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the specific
